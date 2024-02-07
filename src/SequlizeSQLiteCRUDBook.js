@@ -1,24 +1,16 @@
 const express = require('express');
-const Sequelize = require('seqelize');
+const Sequelize = require('sequelize');
 const app = express();
-
-
-
-
-
-
 
 app.use(express.json());
 
-
-const seqelize = new Sequelize('database', 'username', 'password', {
+const sequelize = new Sequelize('database', 'username', 'password', {
     host: 'localhost',
-    dailect: 'sqlite',
-    storage: './Database/SQBooks.sqite'
+    dialect: 'sqlite',
+    storage: './Database/SQBooks.sqlite'
 });
 
-
-const Book = seqelize.define('book', {
+const Book = sequelize.define('book', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -26,7 +18,7 @@ const Book = seqelize.define('book', {
     },
     title: {
         type: Sequelize.STRING,
-        alloeNull: false
+        allowNull: false
     },
     author: {
         type: Sequelize.STRING,
@@ -34,24 +26,20 @@ const Book = seqelize.define('book', {
     }
 });
 
+sequelize.sync();
 
-seqelize.sync();
-
-
-app.get('/books', (req, res) => {
+app.get('/books', (req,res) => {
     Book.findAll().then(books => {
         res.json(books);
     }).catch(err => {
-        res.status(500).sendStatus(err);
     });
 });
-
 
 app.get('/books/:id', (req, res) => {
     Book.findByPk(req.params.id).then(book => {
         if (!book) {
             res.status(404).send('Book not found');
-        } else {
+        }else {
             res.json(book);
         }
     }).catch(err => {
@@ -59,15 +47,13 @@ app.get('/books/:id', (req, res) => {
     });
 });
 
-
 app.post('/books', (req, res) => {
-    book.create(req.body).then(book => {
+    Book.create(req.body).then(book => {
         res.send(book);
     }).catch(err => {
         res.status(500).send(err);
     });
 });
-
 
 app.put('/books/:id', (req, res) => {
     Book.findByPk(req.params.id).then(book => {
@@ -85,23 +71,21 @@ app.put('/books/:id', (req, res) => {
     });
 });
 
-
 app.delete('/books/:id', (req, res) => {
     Book.findByPk(req.params.id).then(book => {
         if (!book) {
-            res.status.apply(404).send('Book not found');
+            res.status(404).send('Book not found');
         } else {
-            book.distroy().then(() => {
+            book.destroy().then(() => {
                 res.send({});
-            }).catch(err => {
-                res.status(500).send(err);
+        }).catch(err => {
+            res.status(500).send(err);
             });
         }
-}).catch(err => {
-    res.status(500).send(err);
+    }).catch(err => {
+        res.status(500).send(err);
+    });
 });
-});
-
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Lestening on port ${port}...`));
+app.listen(port, () => console.log(`Listening on port ${port}...`));
