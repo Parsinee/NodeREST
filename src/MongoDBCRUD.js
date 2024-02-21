@@ -1,41 +1,32 @@
-
-
-
-
-
-const experss = require("express");
+const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
-
 mongoose.connect(
-    "mongodb://admin:SBFsqa14913@node40731-noderest.proen.app.ruk-com.cloud:11344",
+    "mongodb://admin:VZQlaa25848@node57053-kittipong-noderest.proen.app.ruk-com.cloud:11809/Books",
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     }
 );
 
-const Book = mongoose.model("Book", {
+const book = mongoose.model("Book", {
     id: {
         type: Number,
         unique: true,
-        require: true,
+        required: true,
     },
     title: String,
     author: String,
 });
 
-const app = experss();
+const app = express();
 app.use(bodyParser.json());
 
-
 app.post("/books", async (req, res) => {
-    try {
-        const lastBook = await Book.findOne().sort({ id: -1 });
+    try{
+        const lastBook = await book.findOne().sort({ id: -1 });
         const nextId = lastBook ? lastBook.id + 1 : 1;
-
-
 
         const book = new Book({
             id: nextId,
@@ -49,7 +40,6 @@ app.post("/books", async (req, res) => {
     }
 });
 
-
 app.get("/books", async (req, res) => {
     try {
         const books = await Book.find();
@@ -59,7 +49,6 @@ app.get("/books", async (req, res) => {
     }
 });
 
-
 app.get("/books/:id", async (req, res) => {
     try {
         const book = await Book.findOne({id:req.params.id});
@@ -68,7 +57,6 @@ app.get("/books/:id", async (req, res) => {
         res.status(500).send(error);
     }
 });
-
 
 app.put("/books/:id", async (req, res) => {
     try {
@@ -81,7 +69,6 @@ app.put("/books/:id", async (req, res) => {
     }
 });
 
-
 app.delete("/books/:id", async (req, res) => {
     try {
         const book = await Book.findOneAndDelete({id:req.params.id});
@@ -91,8 +78,7 @@ app.delete("/books/:id", async (req, res) => {
     }
 });
 
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server started at http://localhost:${PORT}`);
+    console.log(`Server atarted at http://localhost:${PORT}`);
 });
